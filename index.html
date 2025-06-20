@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcher IF-Typ bist du? - Kostenloses Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .quiz-container {
+            padding: 40px 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .question {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .question h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .option label {
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: block;
+            width: 100%;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .results.active {
+            display: block;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .type-description {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .type-description h4 {
+            color: #667eea;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .type-description ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .type-description li {
+            margin-bottom: 8px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .cta-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .cta-btn {
+            background: white;
+            color: #667eea;
+            padding: 15px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,255,255,0.3);
+        }
+
+        .question-counter {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .quiz-container {
+                padding: 30px 20px;
+            }
+            
+            .option {
+                padding: 15px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Welcher IF-Typ bist du?</h1>
+            <p>Finde in 5 Minuten deinen perfekten Intermittierendes Fasten-Plan!</p>
+        </div>
+
+        <div class="quiz-container">
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+
+            <div class="question-counter">
+                <span id="currentQuestion">1</span> von <span id="totalQuestions">12</span> Fragen
+            </div>
+
+            <!-- Question 1 -->
+            <div class="question active" data-question="1">
+                <h3>Wann stehst du normalerweise auf?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Vor 6:00 Uhr - ich bin ein echter Frühaufsteher ⏰</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Zwischen 6:00-7:30 Uhr - ganz normal ☀️</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Nach 7:30 Uhr - ich brauche meinen Schlaf 😴</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Sehr unterschiedlich - mein Zeitplan variiert stark 🔄</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question" data-question="2">
+                <h3>Wie fühlst du dich normalerweise am Morgen?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Topfit und energiegeladen - bereit für den Tag! 💪</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Ok, nach dem ersten Kaffee geht's 📈</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Müde und brauche Zeit zum Wachwerden 🥱</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Hängt davon ab, wie die Nacht war 🤷</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question" data-question="3">
+                <h3>Wann hast du normalerweise den größten Hunger?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Morgens - ich könnte ein ganzes Frühstück verdrücken 🥐</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Mittags - da brauche ich richtig was Ordentliches 🍽️</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Abends - dann kann ich entspannt essen 🌙</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Unregelmäßig - mal so, mal so 🎲</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question" data-question="4">
+                <h3>Wie sieht dein Arbeitsalltag aus?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Feste Zeiten, 9-17 Uhr, sehr strukturiert 🏢</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Meist feste Zeiten, aber etwas flexibel 📊</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Sehr flexibel oder Homeoffice 🏠</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Schichtarbeit oder sehr unregelmäßig 🔄</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question" data-question="5">
+                <h3>Wie gehst du mit Stress um?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Ich esse weniger, wenn ich gestresst bin 📉</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Stress beeinflusst mein Essen nicht so sehr 😐</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Bei Stress esse ich definitiv mehr 📈</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Das ist sehr situationsabhängig 🤔</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question" data-question="6">
+                <h3>Wie wichtig ist dir dein Abendessen?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Nicht so wichtig - hauptsache, ich tanke Energie 🤷</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Schon wichtig, aber nicht das Highlight des Tages 👍</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Sehr wichtig - das ist meine Hauptmahlzeit! 🌟</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Wechselt je nach Tag und Situation 🔄</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question" data-question="7">
+                <h3>Wie ist dein Energielevel über den Tag?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Morgens top, nachmittags eher schlapp 📉</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Relativ konstant den ganzen Tag 📊</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Morgens schlapp, abends am besten 📈</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Sehr unvorhersagbar, ständige Schwankungen 🎢</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question" data-question="8">
+                <h3>Wie oft isst du normalerweise?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>3 feste Mahlzeiten, selten Snacks 🍽️</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>3 Mahlzeiten + 1-2 kleine Snacks 🥨</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Eher 5-6 kleine Mahlzeiten über den Tag 🍎</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Sehr unregelmäßig - mal viel, mal wenig 🤷</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="question" data-question="9">
+                <h3>Was ist dein größtes Problem beim Essen?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Ich vergesse manchmal zu essen ⏰</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Ich esse zu viel zwischendurch 🍪</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Ich esse abends zu spät und zu viel 🌙</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Mein Essensrhythmus ist chaotisch 🌪️</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="question" data-question="10">
+                <h3>Wie reagierst du auf Hunger?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Ich kann Hunger gut aushalten 💪</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Hunger stört mich, aber ist ok 😐</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Hunger macht mich unkonzentriert und gereizt 😤</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Das hängt von der Situation ab 🤔</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 11 -->
+            <div class="question" data-question="11">
+                <h3>Welche Tageszeit ist für dich am produktivsten?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Definitiv morgens - da schaffe ich am meisten! 🌅</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Vormittags bis Mittag 📈</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Nachmittags bis abends 🌆</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Das variiert stark 🔄</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 12 -->
+            <div class="question" data-question="12">
+                <h3>Wie wichtig ist dir Flexibilität in deiner Ernährung?</h3>
+                <div class="options">
+                    <div class="option" data-value="a">
+                        <label>Nicht so wichtig - ich mag Routine 📋</label>
+                    </div>
+                    <div class="option" data-value="b">
+                        <label>Etwas Flexibilität ist schon gut 🤝</label>
+                    </div>
+                    <div class="option" data-value="c">
+                        <label>Sehr wichtig - ich brauche Anpassungsmöglichkeiten 🤸</label>
+                    </div>
+                    <div class="option" data-value="d">
+                        <label>Absolut entscheidend - mein Leben ist unvorhersagbar 🎯</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results" id="results">
+                <div class="type-badge" id="typeBadge"></div>
+                <div class="type-description" id="typeDescription"></div>
+                
+                <div class="cta-section">
+                    <h3>🎉 Bereit für die nächste Stufe?</h3>
+                    <p>Du kennst jetzt deinen IF-Typ! Unser vollständiges <strong>"6-Phasen-Programm"</strong> gibt dir alles, was du brauchst:</p>
+                    <ul style="text-align: left; margin: 20px 0; line-height: 1.8;">
+                        <li>✅ Detaillierte Wochenpläne für ALLE Situationen</li>
+                        <li>✅ Über 50 Checklisten und Vorlagen</li>
+                        <li>✅ Wissenschaftlich fundierte Strategien</li>
+                        <li>✅ Kontinuierliches Feedback-System</li>
+                    </ul>
+                    <a href="#" class="cta-btn" onclick="trackConversion()">Jetzt das vollständige Programm sichern - nur 97€</a>
+                </div>
+            </div>
+
+            <div class="navigation" id="navigation">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>Zurück</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Weiter</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 1;
+        let answers = {};
+        const totalQuestions = 12;
+
+        // Initialize quiz
+        document.getElementById('totalQuestions').textContent = totalQuestions;
+        updateProgressBar();
+
+        // Add click event listeners to all options
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const questionNum = this.closest('.question').dataset.question;
+                const value = this.dataset.value;
+                
+                // Remove selected class from siblings
+                this.parentNode.querySelectorAll('.option').forEach(sibling => {
+                    sibling.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Store answer
+                answers[questionNum] = value;
+                
+                // Enable next button
+                document.getElementById('nextBtn').disabled = false;
+            });
+        });
+
+        function nextQuestion() {
+            if (currentQuestionIndex < totalQuestions) {
+                // Hide current question
+                document.querySelector(`[data-question="${currentQuestionIndex}"]`).classList.remove('active');
+                
+                currentQuestionIndex++;
+                
+                // Show next question
+                document.querySelector(`[data-question="${currentQuestionIndex}"]`).classList.add('active');
+                
+                // Update progress and navigation
+                updateProgressBar();
+                updateNavigation();
+            } else {
+                // Show results
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 1) {
+                // Hide current question
+                document.querySelector(`[data-question="${currentQuestionIndex}"]`).classList.remove('active');
+                
+                currentQuestionIndex--;
+                
+                // Show previous question
+                document.querySelector(`[data-question="${currentQuestionIndex}"]`).classList.add('active');
+                
+                // Update progress and navigation
+                updateProgressBar();
+                updateNavigation();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = (currentQuestionIndex / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex;
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Enable/disable previous button
+            prevBtn.disabled = currentQuestionIndex === 1;
+            
+            // Check if current question is answered
+            const isAnswered = answers[currentQuestionIndex] !== undefined;
+            nextBtn.disabled = !isAnswered;
+            
+            // Update next button text
+            if (currentQuestionIndex === totalQuestions) {
+                nextBtn.textContent = 'Ergebnis anzeigen';
+            } else {
+                nextBtn.textContent = 'Weiter';
+            }
+        }
+
+        function calculateResult() {
+            const scores = { a: 0, b: 0, c: 0, d: 0 };
+            
+            // Count answers
+            Object.values(answers).forEach(answer => {
+                scores[answer]++;
+            });
+            
+            // Determine type based on highest score
+            const maxScore = Math.max(...Object.values(scores));
+            const dominantLetter = Object.keys(scores).find(key => scores[key] === maxScore);
+            
+            const types = {
+                a: {
+                    name: 'Der Frühaufsteher-Profi 🌅',
+                    subtitle: 'Energie am Morgen, Ruhe am Abend',
+                    plan: '14:10 (14h fasten, 10h essen)',
+                    window: '6:00 - 16:00 Uhr',
+                    description: `
+                        <h4>Deine Charakteristika:</h4>
+                        <ul>
+                            <li>Du stehst früh auf und bist sofort fit</li>
+                            <li>Höchste Produktivität am Morgen</li>
+                            <li>Abends müde und weniger Hunger</li>
+                            <li>Du magst Struktur und Routine</li>
+                        </ul>
+                        
+                        <h4>Dein optimaler IF-Plan:</h4>
+                        <ul>
+                            <li><strong>Essensfenster:</strong> 6:00 - 16:00 Uhr</li>
+                            <li><strong>Erste Mahlzeit:</strong> 6:00 Uhr (Frühstück)</li>
+                            <li><strong>Letzte Mahlzeit:</strong> 15:30 Uhr</li>
+                            <li><strong>Fastenzeit:</strong> 16:00 - 6:00 Uhr</li>
+                        </ul>
+                        
+                        <h4>Deine ersten 3 Schritte:</h4>
+                        <ul>
+                            <li>Woche 1: Verschiebe dein Abendessen um 30 Min nach vorne</li>
+                            <li>Woche 2: Stoppe das Essen nach 16:00 Uhr komplett</li>
+                            <li>Woche 3: Optimiere dein Frühstück für langanhaltende Energie</li>
+                        </ul>
+                    `
+                },
+                b: {
+                    name: 'Der Büro-Warrior 🏢',
+                    subtitle: 'Struktur mit Flexibilität',
+                    plan: '16:8 (16h fasten, 8h essen)',
+                    window: '12:00 - 20:00 Uhr',
+                    description: `
+                        <h4>Deine Charakteristika:</h4>
+                        <ul>
+                            <li>Klassische Arbeitszeiten 9-17 Uhr</li>
+                            <li>Du brauchst Energie für den Arbeitstag</li>
+                            <li>Mittags ist deine wichtigste Mahlzeit</li>
+                            <li>Du magst Routine, aber mit etwas Spielraum</li>
+                        </ul>
+                        
+                        <h4>Dein optimaler IF-Plan:</h4>
+                        <ul>
+                            <li><strong>Essensfenster:</strong> 12:00 - 20:00 Uhr</li>
+                            <li><strong>Erste Mahlzeit:</strong> 12:00 Uhr (Mittagessen)</li>
+                            <li><strong>Letzte Mahlzeit:</strong> 19:30 Uhr (Abendessen)</li>
+                            <li><strong>Fastenzeit:</strong> 20:00 - 12:00 Uhr</li>
+                        </ul>
+                        
+                        <h4>Deine ersten 3 Schritte:</h4>
+                        <ul>
+                            <li>Woche 1: Ersetze das Frühstück durch Kaffee/Tee</li>
+                            <li>Woche 2: Verschiebe die erste Mahlzeit auf 12:00 Uhr</li>
+                            <li>Woche 3: Perfektioniere dein Mittag- und Abendessen</li>
+                        </ul>
+                    `
+                },
+                c: {
+                    name: 'Der Flexibel-Kreative 🤸',
+                    subtitle: 'Anpassung ist alles',
+                    plan: '12:12 + Flexibel (12h fasten, 12h essen)',
+                    window: 'Variabel, z.B. 10:00 - 22:00 Uhr',
+                    description: `
+                        <h4>Deine Charakteristika:</h4>
+                        <ul>
+                            <li>Unregelmäßige Arbeitszeiten oder Homeoffice</li>
+                            <li>Produktivität schwankt über den Tag</li>
+                            <li>Du brauchst Flexibilität in allem</li>
+                            <li>Abends bist du oft am aktivsten</li>
+                        </ul>
+                        
+                        <h4>Dein optimaler IF-Plan:</h4>
+                        <ul>
+                            <li><strong>Essensfenster:</strong> Variabel (z.B. 10:00 - 22:00 Uhr)</li>
+                            <li><strong>Erste Mahlzeit:</strong> Flexibel zwischen 9:00-11:00 Uhr</li>
+                            <li><strong>Letzte Mahlzeit:</strong> Flexibel zwischen 21:00-23:00 Uhr</li>
+                            <li><strong>Fastenzeit:</strong> Mindestens 12h zusammenhängend</li>
+                        </ul>
+                        
+                        <h4>Deine ersten 3 Schritte:</h4>
+                        <ul>
+                            <li>Woche 1: Etabliere 12h-Fasten-Fenster täglich</li>
+                            <li>Woche 2: Finde deine 2-3 bevorzugten Zeitfenster</li>
+                            <li>Woche 3: Teste längere Fastenzeiten an guten Tagen</li>
+                        </ul>
+                    `
+                },
+                d: {
+                    name: 'Der Schicht-Kämpfer 🔄',
+                    subtitle: 'Stabilität im Chaos',
+                    plan: 'Flexibles 14:10 System',
+                    window: 'Anpassbar an Schichtzeiten',
+                    description: `
+                        <h4>Deine Charakteristika:</h4>
+                        <ul>
+                            <li>Schichtarbeit oder sehr unregelmäßige Zeiten</li>
+                            <li>Energielevel schwankt stark</li>
+                            <li>Du brauchst einfache, anpassbare Systeme</li>
+                            <li>Oft gestresst durch unregelmäßigen Alltag</li>
+                        </ul>
+                        
+                        <h4>Dein optimaler IF-Plan:</h4>
+                        <ul>
+                            <li><strong>Grundregel:</strong> 14h fasten, 10h essen - WANN ist flexibel</li>
+                            <li><strong>Frühdienst:</strong> Essen 6:00-16:00, Fasten 16:00-6:00</li>
+                            <li><strong>Spätdienst:</strong> Essen 14:00-24:00, Fasten 24:00-14:00</li>
+                            <li><strong>Nachtdienst:</strong> Individuell nach Schlafzeiten</li>
+                        </ul>
+                        
+                        <h4>Deine ersten 3 Schritte:</h4>
+                        <ul>
+                            <li>Woche 1: Tracke deine aktuellen Essenszeiten</li>
+                            <li>Woche 2: Etabliere 14h-Fasten pro 24h-Zyklus</li>
+                            <li>Woche 3: Entwickle 3 Standard-Schemas für deine Schichten</li>
+                        </ul>
+                    `
+                }
+            };
+            
+            return types[dominantLetter];
+        }
+
+        function showResults() {
+            // Hide quiz content
+            document.querySelector('.question.active').classList.remove('active');
+            document.getElementById('navigation').style.display = 'none';
+            document.querySelector('.progress-bar').style.display = 'none';
+            document.querySelector('.question-counter').style.display = 'none';
+            
+            // Calculate and show result
+            const result = calculateResult();
+            
+            document.getElementById('typeBadge').textContent = result.name;
+            document.getElementById('typeDescription').innerHTML = `
+                <h4 style="color: #667eea; font-size: 1.4rem; margin-bottom: 15px;">${result.subtitle}</h4>
+                <p style="font-size: 1.1rem; margin-bottom: 20px;"><strong>Dein optimaler Plan:</strong> ${result.plan}</p>
+                <p style="font-size: 1rem; margin-bottom: 25px; color: #666;"><strong>Essensfenster:</strong> ${result.window}</p>
+                ${result.description}
+            `;
+            
+            document.getElementById('results').classList.add('active');
+            
+            // Track quiz completion (you can integrate this with your analytics)
+            trackQuizCompletion(result.name);
+        }
+
+        function trackQuizCompletion(resultType) {
+            // Here you can integrate with Google Analytics, Facebook Pixel, or your email service
+            console.log('Quiz completed with result:', resultType);
+            
+            // Example: Send to Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'quiz_completed', {
+                    'custom_parameter_1': resultType
+                });
+            }
+            
+            // Example: Send to Facebook Pixel
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'CompleteRegistration', {
+                    content_name: 'IF Quiz Completed',
+                    content_category: resultType
+                });
+            }
+        }
+
+        function trackConversion() {
+            // Track when someone clicks the CTA button
+            console.log('CTA clicked - redirect to sales page');
+            
+            // Example: Track conversion event
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'conversion', {
+                    'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL'
+                });
+            }
+            
+            // Replace with your actual sales page URL
+            window.open('https://your-sales-page.com', '_blank');
+        }
+
+        // Auto-advance on selection (optional - remove if you want manual navigation only)
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                setTimeout(() => {
+                    if (currentQuestionIndex < totalQuestions && !document.getElementById('nextBtn').disabled) {
+                        // Auto-advance after 1 second (optional)
+                        // nextQuestion();
+                    }
+                }, 1000);
+            });
+        });
+
+        // Initialize navigation state
+        updateNavigation();
+    </script>
+</body>
+</html>
